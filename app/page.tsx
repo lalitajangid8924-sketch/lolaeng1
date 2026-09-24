@@ -1,0 +1,19 @@
+"use client";
+import {useMemo,useState} from "react";
+type P={id:number;name:string;price:number;image:string;tag?:string};
+const products:P[]=[
+{id:1,name:"Blush Heart Tee",price:699,tag:"BESTSELLER",image:"https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=85"},
+{id:2,name:"Everyday Smile Tee",price:649,image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=700&q=85"},
+{id:3,name:"Cherry Pop Tee",price:749,tag:"NEW",image:"https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=700&q=85"},
+{id:4,name:"Weekend Vibes Tee",price:699,image:"https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=700&q=85"}];
+export default function Home(){
+ const [cart,setCart]=useState<P[]>([]),[wish,setWish]=useState<number[]>([]),[q,setQ]=useState(""),[show,setShow]=useState(false);
+ const list=useMemo(()=>products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())),[q]);
+ const add=(p:P)=>setCart(c=>[...c,p]);
+ return <main><nav className="nav"><div className="wrap navin"><b className="logo">LOLA <i>ENGLAND</i></b><div className="links"><a href="#new">New In</a><a href="#shop">Shop</a><a href="#about">About</a></div><button className="pill" onClick={()=>setShow(true)}>Bag ({cart.length})</button></div></nav>
+ <section className="hero"><div className="wrap heroGrid"><div><small>GIRLS • EVERYDAY • EASY</small><h1>Little tees.<br/>Big energy.</h1><p>Playful, comfy and made for everyday adventures. Discover Lola England's fresh collection of girls' T-shirts.</p><button className="dark" onClick={()=>setShow(true)}>Shop T-shirts →</button></div><div className="heroImg"/></div></section>
+ <section className="section" id="new"><div className="wrap"><div className="head"><div><small>FRESH DROP</small><h2>New & loved</h2></div><button className="pill" onClick={()=>setShow(true)}>View all</button></div><div className="grid">{products.map(p=><Card key={p.id} p={p} wish={wish.includes(p.id)} onWish={()=>setWish(w=>w.includes(p.id)?w.filter(x=>x!==p.id):[...w,p.id])} onAdd={()=>add(p)}/>)}</div></div></section>
+ <section className="section" id="about"><div className="wrap banner"><div><h2>Made for her everyday.</h2><p>Soft looks, easy styling and happy colors.</p></div><button className="light" onClick={()=>setShow(true)}>Shop collection</button></div></section>
+ {show&&<div className="overlay"><div className="modal"><div className="head"><h2>Your bag</h2><button className="pill" onClick={()=>setShow(false)}>Close</button></div><input className="search" placeholder="Search T-shirts..." value={q} onChange={e=>setQ(e.target.value)}/>{cart.length===0?<p className="empty">Your bag is empty. Add something cute!</p>:cart.map((p,i)=><div className="row" key={i}><img src={p.image}/><div><b>{p.name}</b><p>₹{p.price}</p></div><button className="pill" onClick={()=>setCart(c=>c.filter((_,x)=>x!==i))}>Remove</button></div>)}{cart.length>0&&<h3>Total: ₹{cart.reduce((s,p)=>s+p.price,0)}</h3>}<p className="notice">Online checkout, login and orders will be connected after Supabase is configured.</p></div></div>}
+ <footer><div className="wrap"><b className="logo">LOLA <i>ENGLAND</i></b><p>Girls' T-shirts made for everyday smiles.</p></div></footer></main>}
+function Card({p,wish,onWish,onAdd}:{p:P;wish:boolean;onWish:()=>void;onAdd:()=>void}){return <article className="card"><div className="photo"><img src={p.image} alt={p.name}/>{p.tag&&<span>{p.tag}</span>}<button onClick={onWish}>{wish?"♥":"♡"}</button></div><div className="info"><h3>{p.name}</h3><b>₹{p.price}</b><button className="dark add" onClick={onAdd}>Add to bag</button></div></article>}
